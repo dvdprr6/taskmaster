@@ -61,11 +61,11 @@ const ButtonGroup: FC<{
           <Button>Add Task</Button>
         </DialogTrigger>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Task</DialogTitle>
-          </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
+              <DialogHeader>
+                <DialogTitle>Add Task</DialogTitle>
+              </DialogHeader>
               <div style={{ marginBottom: '10px'}}>
                 <FormField
                   control={form.control}
@@ -81,7 +81,7 @@ const ButtonGroup: FC<{
                   )}
                 />
               </div>
-              <div>
+              <div style={{ marginBottom: '10px'}}>
                 <FormField
                   control={form.control}
                   name='description'
@@ -96,18 +96,17 @@ const ButtonGroup: FC<{
                   )}
                 />
               </div>
+              <DialogFooter>
+                <Button type='submit'>Add</Button>
+              </DialogFooter>
             </form>
           </Form>
-          <DialogFooter>
-            <Button>Add</Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
       <Button onClick={filterByNotStarted}>Filter By Not Started</Button>
       <Button onClick={filterByInProgress}>Filter by In Progress</Button>
       <Button onClick={filterByCompleted}>Filter By Complete</Button>
     </div>
-
   )
 }
 
