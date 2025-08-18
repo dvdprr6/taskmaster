@@ -1,5 +1,6 @@
 'use client'
 
+import { FC } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -9,8 +10,50 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Task } from './types'
+import { Textarea } from '@/components/ui/textarea'
 
-const ButtonGroup = () => {
+
+
+const formSchema = z.object({
+  title: z.string(),
+  description: z.string()
+})
+
+const ButtonGroup: FC<{
+  addTask: (tasks: Task) => void
+  filterByNotStarted: () => void
+  filterByInProgress: () => void
+  filterByCompleted: () => void
+}> = (props) => {
+  const { addTask, filterByNotStarted, filterByInProgress, filterByCompleted } = props
+
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: '',
+      description: ''
+    },
+  })
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values.title)
+    console.log(values.description)
+  }
+
   return (
     <div style={{ display: 'flex', gap: '10px'}}>
       <Dialog>
@@ -21,14 +64,48 @@ const ButtonGroup = () => {
           <DialogHeader>
             <DialogTitle>Add Task</DialogTitle>
           </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div style={{ marginBottom: '10px'}}>
+                <FormField
+                  control={form.control}
+                  name='title'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder='Title' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div>
+                <FormField
+                  control={form.control}
+                  name='description'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder='Describe your task' {...field}/>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </form>
+          </Form>
           <DialogFooter>
             <Button>Add</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <Button>Filter By Not Started</Button>
-      <Button>Filter by In Progress</Button>
-      <Button>Filter By Complete</Button>
+      <Button onClick={filterByNotStarted}>Filter By Not Started</Button>
+      <Button onClick={filterByInProgress}>Filter by In Progress</Button>
+      <Button onClick={filterByCompleted}>Filter By Complete</Button>
     </div>
 
   )
