@@ -1,36 +1,10 @@
 'use client'
 
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { Task } from './types'
-import { Textarea } from '@/components/ui/textarea'
-
-
-
-const formSchema = z.object({
-  title: z.string(),
-  description: z.string()
-})
+import { Task, formSchema } from './types'
+import DialogForm from './dialogForm'
 
 const ButtonGroup: FC<{
   addTask: (tasks: Task) => void
@@ -38,74 +12,30 @@ const ButtonGroup: FC<{
   filterByInProgress: () => void
   filterByCompleted: () => void
 }> = (props) => {
+
   const { addTask, filterByNotStarted, filterByInProgress, filterByCompleted } = props
+  const [open, setOpen] = useState<boolean>(false)
 
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: '',
-      description: ''
-    },
-  })
+  const openDialog = () => { setOpen(true) }
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values.title)
-    console.log(values.description)
+    const task: Task = {
+      id: values.id,
+      status: values.status,
+      title: values.title,
+      description: values.description
+    }
+    addTask(task)
+    setOpen(false)
   }
 
   return (
     <div style={{ display: 'flex', gap: '10px'}}>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button>Add Task</Button>
-        </DialogTrigger>
-        <DialogContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <DialogHeader>
-                <DialogTitle>Add Task</DialogTitle>
-              </DialogHeader>
-              <div style={{ marginBottom: '10px'}}>
-                <FormField
-                  control={form.control}
-                  name='title'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input placeholder='Title' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div style={{ marginBottom: '10px'}}>
-                <FormField
-                  control={form.control}
-                  name='description'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder='Describe your task' {...field}/>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <DialogFooter>
-                <Button type='submit'>Add</Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+      <Button onClick={openDialog}>Add Task</Button>
       <Button onClick={filterByNotStarted}>Filter By Not Started</Button>
-      <Button onClick={filterByInProgress}>Filter by In Progress</Button>
+      <Button onClick={filterByInProgress}>Filter By In Progress</Button>
       <Button onClick={filterByCompleted}>Filter By Complete</Button>
+      <DialogForm open={open} setOpen={setOpen} onSubmit={onSubmit} />
     </div>
   )
 }
