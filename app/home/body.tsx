@@ -1,7 +1,7 @@
 'use client'
 
 import { FC, useState } from 'react'
-import { formSchema, Task } from './types'
+import { formTaskSchema, Task } from './types'
 import {
   Card,
   CardContent,
@@ -12,10 +12,9 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import DialogForm from './dialogForm'
 import { z } from 'zod'
 import { v4 as uuidv4 } from 'uuid'
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { DialogEditTaskForm, DialogRemoveTaskForm } from './dialogForm'
 
 const Body: FC<{
   tasks: Task[],
@@ -33,7 +32,7 @@ const Body: FC<{
     setOpenEdit(true)
   }
 
-  const onEdit = (values: z.infer<typeof formSchema>) => {
+  const onEdit = (values: z.infer<typeof formTaskSchema>) => {
     const task: Task = {
       id: values.id,
       status: values.status,
@@ -80,41 +79,23 @@ const Body: FC<{
           </Card>
         ))}
       </div>
-      <DialogForm
+      <DialogEditTaskForm
         open={openEdit}
-        setOpen={setOpenEdit}
+        setOpenAction={setOpenEdit}
         initialValues={taskItem}
-        onSubmit={onEdit}
+        onSubmitAction={onEdit}
       />
-      <DialogRemoveForm
+      <DialogRemoveTaskForm
         open={openDelete}
-        setOpen={setOpenDelete}
-        confirmDeleteTask={confirmDeleteTask}
+        setOpenAction={setOpenDelete}
+        confirmDeleteTaskAction={confirmDeleteTask}
       />
     </div>
   )
 }
 
-const DialogRemoveForm: FC<{
-  open: boolean,
-  setOpen: (open: boolean) => void,
-  confirmDeleteTask: () => void
-}> = (props) => {
-  const { open, setOpen, confirmDeleteTask } = props
-
-  return(
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Are sure you want to remove this task?</DialogTitle>
-        </DialogHeader>
-        <DialogFooter>
-          <Button onClick={() => setOpen(false)}>No</Button>
-          <Button onClick={() => confirmDeleteTask()}>Yes</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
 export default Body
+
+
+
+// export default Body

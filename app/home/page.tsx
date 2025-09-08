@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import ButtonGroup from './buttonGroup'
+import ButtonBar from './buttonBar'
 import Body from './body'
 import { Task } from './types'
 
@@ -51,7 +51,7 @@ const HomePage = () => {
   return (
     <section>
       <div style={{ width: '90%', maxWidth: 'none', margin: 'auto', marginBottom: '10px' }}>
-        <ButtonGroup
+        <ButtonBar
           addTask={addTask}
           filterByNotStarted={filterByNotStarted}
           filterByInProgress={filterByInProgress}
