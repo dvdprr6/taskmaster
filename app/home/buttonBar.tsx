@@ -20,7 +20,7 @@ const ButtonBar: FC<{
 }> = (props) => {
   const { initialProjects } = props
   const [openTask, setOpenTask] = useState<boolean>(false)
-  const [openProject, setOpenProject] = useState<boolean>(false)
+  const [openDialogProject, setOpenDialogProject] = useState<boolean>(false)
   const [projects, setProjects] = useState<Project[]>(initialProjects)
 
   const handleAddProject = (values: z.infer<typeof formProjectSchema>) => {
@@ -32,6 +32,7 @@ const ButtonBar: FC<{
     addProject(newProject)
       .then(project => setProjects(prev => [...prev, project]))
       .catch(error => console.error('Error adding project:', error))
+      .finally(() => setOpenDialogProject(false))
   }
 
   // const openTaskDialog = () => { setOpenTask(true) }
@@ -43,7 +44,7 @@ const ButtonBar: FC<{
   //     id: values.id,
   //     status: values.status,
   //     title: values.title,
-  //     description: values.description
+  //     description: values.descriptions
   //   }
   //   addTask(task)
   //   setOpenTask(false)
@@ -69,8 +70,12 @@ const ButtonBar: FC<{
       <div className={'ml-auto'}>
         <ProjectSelection projectList={projects}/>
       </div>
-      <Button onClick={() => setOpenProject(true)}>Add Project</Button>
-      <DialogAddProjectForm open={openProject} setOpenAction={setOpenProject}  onSubmitAction={handleAddProject} />
+      <Button onClick={() => setOpenDialogProject(true)}>Add Project</Button>
+      <DialogAddProjectForm
+        open={openDialogProject}
+        setOpenAction={setOpenDialogProject}
+        onSubmitAction={handleAddProject}
+      />
       <Button>Delete Project</Button>
     </div>
   )

@@ -20,7 +20,7 @@ export async function getProjects(): Promise<Project[]> {
 }
 
 export async function addProject(project: Project): Promise<Project> {
-  const params = [project.id, project.title]
+  const params = [project.id, project.title, project.description]
   try {
     const result: QueryResult<Project> = await query(INSERT_PROJECT, params)
     revalidatePath('/home') // Revalidate the current page
