@@ -3,52 +3,74 @@
 import { FC, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { z } from 'zod'
-import { Task, formTaskSchema } from './types'
+import {Task, Project, formTaskSchema, formProjectSchema } from './types'
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { DialogAddTaskForm } from './dialogForm'
+import { DialogAddTaskForm, DialogAddProjectForm } from './dialogForm'
+import { addProject } from './actions';
 
 const ButtonBar: FC<{
-  addTask: (tasks: Task) => void
-  filterByNotStarted: () => void
-  filterByInProgress: () => void
-  filterByCompleted: () => void
+  initialProjects: Project[]
 }> = (props) => {
+  const { initialProjects } = props
+  const [openTask, setOpenTask] = useState<boolean>(false)
+  const [openProject, setOpenProject] = useState<boolean>(false)
+  const [projects, setProjects] = useState<Project[]>(initialProjects)
 
-  const { addTask, filterByNotStarted, filterByInProgress, filterByCompleted } = props
-  const [open, setOpen] = useState<boolean>(false)
-
-  const openDialog = () => { setOpen(true) }
-
-  const onSubmit = (values: z.infer<typeof formTaskSchema>) => {
-    const task: Task = {
+  const handleAddProject = (values: z.infer<typeof formProjectSchema>) => {
+    const newProject: Project = {
       id: values.id,
-      status: values.status,
       title: values.title,
       description: values.description
     }
-    addTask(task)
-    setOpen(false)
+    addProject(newProject)
+      .then(project => setProjects(prev => [...prev, project]))
+      .catch(error => console.error('Error adding project:', error))
   }
+
+  // const openTaskDialog = () => { setOpenTask(true) }
+  //
+  // const openProjectDialog = () => { setOpenProject(true) }
+  //
+  // const onTaskSubmit = (values: z.infer<typeof formTaskSchema>) => {
+  //   const task: Task = {
+  //     id: values.id,
+  //     status: values.status,
+  //     title: values.title,
+  //     description: values.description
+  //   }
+  //   addTask(task)
+  //   setOpenTask(false)
+  // }
+  //
+  // const onProjectSubmit = (values: z.infer<typeof formProjectSchema>) => {
+  //   const project: Project = {
+  //     id: values.id,
+  //     title: values.title,
+  //     description: values.description
+  //   }
+  //   addProject(project)
+  //   setOpenProject(false)
+  // }
 
   return (
     <div className={'flex gap-[10px]'}>
-      <Button onClick={openDialog}>Add Task</Button>
-      <Button onClick={filterByNotStarted}>Filter By Not Started</Button>
-      <Button onClick={filterByInProgress}>Filter By In Progress</Button>
-      <Button onClick={filterByCompleted}>Filter By Complete</Button>
-      <DialogAddTaskForm open={open} setOpenAction={setOpen} onSubmitAction={onSubmit} />
+      {/*<Button onClick={openTaskDialog}>Add Task</Button>*/}
+      {/*<Button onClick={filterTasksByNotStarted}>Filter By Not Started</Button>*/}
+      {/*<Button onClick={filterTasksByInProgress}>Filter By In Progress</Button>*/}
+      {/*<Button onClick={filterTasksByCompleted}>Filter By Complete</Button>*/}
+      {/*<DialogAddTaskForm open={openTask} setOpenAction={setOpenTask} onSubmitAction={onTaskSubmit} />*/}
       <div className={'ml-auto'}>
-        <ProjectSelection />
+        <ProjectSelection projectList={projects}/>
       </div>
-      <Button>Add Project</Button>
+      <Button onClick={() => setOpenProject(true)}>Add Project</Button>
+      <DialogAddProjectForm open={openProject} setOpenAction={setOpenProject}  onSubmitAction={handleAddProject} />
       <Button>Delete Project</Button>
     </div>
   )
@@ -56,7 +78,8 @@ const ButtonBar: FC<{
 
 export default ButtonBar
 
-const ProjectSelection = () => {
+const ProjectSelection: FC<{ projectList: Project[] }> = (props) => {
+  const { projectList } = props
   return(
     <Select>
       <SelectTrigger className={'w-[200px]'}>
@@ -64,12 +87,9 @@ const ProjectSelection = () => {
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Project</SelectLabel>
-          <SelectItem value="apple">Apple</SelectItem>
-          <SelectItem value="banana">Banana</SelectItem>
-          <SelectItem value="blueberry">Blueberry</SelectItem>
-          <SelectItem value="grapes">Grapes</SelectItem>
-          <SelectItem value="pineapple">Pineapple</SelectItem>
+          {projectList.map(item => (
+            <SelectItem key={item.id} value={item.title}>{item.title}</SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>

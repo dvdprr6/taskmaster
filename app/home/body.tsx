@@ -95,7 +95,3 @@ const Body: FC<{
 }
 
 export default Body
-
-
-
-// export default Body

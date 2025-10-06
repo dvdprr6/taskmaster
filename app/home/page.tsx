@@ -1,69 +1,37 @@
-'use client'
+'use server'
 
-import { useState } from 'react'
 import ButtonBar from './buttonBar'
 import Body from './body'
-import { Task } from './types'
+import {
+  getProjects, addProject, updateProject, deleteProject,
+  getTasks, sortTasksByStatus, addTask, updateTask, removeTask
+} from './actions'
+import { Project } from './types'
 
-const HomePage = () => {
-  const [taskList, setTaskList] = useState<Task[]>([])
 
-  const addTask = (task: Task) => {
-    const copyOfTaskList = [...taskList]
-    const addedTask = [...copyOfTaskList, task]
 
-    setTaskList(addedTask)
-  }
+const HomePage = async () => {
 
-  const updateTask = (task: Task) => {
-    const copyOfTaskList = [...taskList]
-    const filteredTaskList = copyOfTaskList.filter(item => item.id !== task.id)
-    const updatedTaskList = [...filteredTaskList, task]
-
-    setTaskList(updatedTaskList)
-  }
-
-  const removeTask = (id: string) => {
-    const copyOfTaskList = [...taskList]
-    const filteredTaskList = copyOfTaskList.filter(task => task.id !== id)
-
-    setTaskList(filteredTaskList)
-  }
-
-  const filterByNotStarted = () => {
-    const filterByNotStarted = taskList.filter(task => task.status === 'NOT STARTED')
-
-    setTaskList(filterByNotStarted)
-  }
-
-  const filterByInProgress = () => {
-    const filterByNotStarted = taskList.filter(task => task.status === 'IN PROGRESS')
-
-    setTaskList(filterByNotStarted)
-  }
-
-  const filterByCompleted = () => {
-    const filterByNotStarted = taskList.filter(task => task.status === 'COMPLETED')
-
-    setTaskList(filterByNotStarted)
-  }
+  const projectList: Project[] = await getProjects()
 
   return (
     <section>
       <div style={{ width: '90%', maxWidth: 'none', margin: 'auto', marginBottom: '10px' }}>
         <ButtonBar
-          addTask={addTask}
-          filterByNotStarted={filterByNotStarted}
-          filterByInProgress={filterByInProgress}
-          filterByCompleted={filterByCompleted}
+          // addTask={addTask}
+          // addProject={addProject}
+          initialProjects={projectList}
+          // filterTasksByNotStarted={filterTasksByNotStarted}
+          // filterTasksByInProgress={filterTasksByInProgress}
+          // filterTasksByCompleted={filterTasksByCompleted}
         />
       </div>
       <div style={{ width: '90%', maxWidth: 'none', margin: 'auto' }}>
-        <Body
-          tasks={taskList}
-          removeTask={removeTask}
-          updateTask={updateTask}
-        />
+        {/*<Body*/}
+        {/*  tasks={taskList}*/}
+        {/*  removeTask={removeTask}*/}
+        {/*  updateTask={updateTask}*/}
+        {/*/>*/}
       </div>
     </section>
   )
