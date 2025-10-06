@@ -24,22 +24,22 @@ export async function addProject(project: Project): Promise<Project> {
   try {
     const result: QueryResult<Project> = await query(INSERT_PROJECT, params)
     revalidatePath('/home') // Revalidate the current page
-    return result?.rows[0] || {}
+    return result.rows[0]
   } catch (error) {
     console.error('Error adding project:', error)
     return {} as Project
   }
 }
 
-export async function updateProject(project: Project): Promise<Project | null> {
-  const params = [project.title, project.id]
+export async function updateProject(project: Project): Promise<Project> {
+  const params = [project.id, project.title, project.description]
   try {
     const result: QueryResult<Project> = await query(UPDATE_PROJECT, params)
     revalidatePath('/home')
     return result.rows[0]
   } catch (error) {
     console.error('Error updating project:', error)
-    return null
+    return {} as Project
   }
 }
 

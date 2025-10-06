@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { formTaskSchema, formProjectSchema } from './types'
+import { Project, formTaskSchema, formProjectSchema } from './types'
 import { v4 as uuidv4 } from 'uuid'
 import {
   Select,
@@ -20,6 +20,165 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+
+
+
+export const DialogAddProjectForm: FC<{
+  open: boolean,
+  projects: Project[],
+  setOpenAction: Dispatch<SetStateAction<boolean>>,
+  onSubmitAction: (values: z.infer<typeof formProjectSchema>) => void
+}> = (props) => {
+  const { open, projects, setOpenAction, onSubmitAction } = props
+  const form = useForm<z.infer<typeof formProjectSchema>>({
+    resolver: zodResolver(formProjectSchema.refine(
+      (data) => {
+        return !projects.some(project =>
+          project.title.toLowerCase() === data.title.toLowerCase() &&
+          project.id !== data.id
+        )
+      },
+      {
+        message: 'A project with this title already exists',
+        path: ['title'],
+      }
+    )),
+    defaultValues: {
+      id: uuidv4(),
+      title: '',
+      description: ''
+    },
+  })
+
+  useEffect(() => {
+    if(open){
+      form.reset({
+        id: uuidv4(),
+        title: '',
+        description: ''
+      })
+    }
+  }, [open, form])
+
+  return(
+    <Dialog open={open} onOpenChange={setOpenAction}>
+      <DialogContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmitAction)}>
+            <DialogHeader>
+              <DialogTitle>Add Project</DialogTitle>
+            </DialogHeader>
+            <div style={{ marginBottom: '10px'}}>
+              <FormField
+                control={form.control}
+                name='title'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Title' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div style={{ marginBottom: '10px'}}>
+              <FormField
+                control={form.control}
+                name='description'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder='Describe your task' {...field}/>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <DialogFooter>
+              <Button type='submit'>Add</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+export const DialogEditProjectForm: FC<{
+  open: boolean,
+  setOpenAction: Dispatch<SetStateAction<boolean>>,
+  onSubmitAction: (values: z.infer<typeof formProjectSchema>) => void,
+  initialValues: Partial<z.infer<typeof formTaskSchema>>
+}> = (props) => {
+  const { open, setOpenAction, onSubmitAction, initialValues } = props
+  const form = useForm<z.infer<typeof formProjectSchema>>({
+    resolver: zodResolver(formProjectSchema),
+    defaultValues: {
+      ...initialValues
+    },
+  })
+
+  useEffect(() => {
+    if(open){
+      form.reset({
+        id: initialValues.id,
+        title: initialValues.title,
+        description: initialValues.description
+      })
+    }
+  }, [open, form])
+
+  return(
+    <Dialog open={open} onOpenChange={setOpenAction}>
+      <DialogContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmitAction)}>
+            <DialogHeader>
+              <DialogTitle>Add Project</DialogTitle>
+            </DialogHeader>
+            <div style={{ marginBottom: '10px'}}>
+              <FormField
+                control={form.control}
+                name='title'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Title' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div style={{ marginBottom: '10px'}}>
+              <FormField
+                control={form.control}
+                name='description'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder='Describe your task' {...field}/>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <DialogFooter>
+              <Button type='submit'>Add</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 
 export const DialogAddTaskForm: FC<{
@@ -211,80 +370,6 @@ export const DialogRemoveTaskForm: FC<{
           <Button onClick={() => setOpenAction(false)}>No</Button>
           <Button onClick={() => confirmDeleteTaskAction()}>Yes</Button>
         </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-
-export const DialogAddProjectForm: FC<{
-  open: boolean,
-  setOpenAction: Dispatch<SetStateAction<boolean>>,
-  onSubmitAction: (values: z.infer<typeof formProjectSchema>) => void
-}> = (props) => {
-  const { open, setOpenAction, onSubmitAction } = props
-  const form = useForm<z.infer<typeof formProjectSchema>>({
-    resolver: zodResolver(formProjectSchema),
-    defaultValues: {
-      id: uuidv4(),
-      title: '',
-      description: ''
-    },
-  })
-
-  useEffect(() => {
-    if(open){
-      form.reset({
-        id: uuidv4(),
-        title: '',
-        description: ''
-      })
-    }
-  }, [open, form])
-
-  return(
-    <Dialog open={open} onOpenChange={setOpenAction}>
-      <DialogContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmitAction)}>
-            <DialogHeader>
-              <DialogTitle>Add Project</DialogTitle>
-            </DialogHeader>
-            <div style={{ marginBottom: '10px'}}>
-              <FormField
-                control={form.control}
-                name='title'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Title' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div style={{ marginBottom: '10px'}}>
-              <FormField
-                control={form.control}
-                name='description'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder='Describe your task' {...field}/>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <DialogFooter>
-              <Button type='submit'>Add</Button>
-            </DialogFooter>
-          </form>
-        </Form>
       </DialogContent>
     </Dialog>
   )

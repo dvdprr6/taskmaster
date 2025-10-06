@@ -24,5 +24,5 @@ export const formTaskSchema = z.object({
 export const formProjectSchema = z.object({
   id: z.string(),
   title: z.string().min(1, 'Title is required'),
-  description: z.string().min(1, 'Description is required')
+  description: z.string().optional()
 })

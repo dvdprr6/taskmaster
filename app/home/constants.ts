@@ -1,6 +1,6 @@
 export const SELECT_PROJECTS: string = 'select id, title, description from projects order by title'
 export const INSERT_PROJECT = 'INSERT INTO projects (id, title, description) VALUES ($1, $2, $3) RETURNING *';
-export const UPDATE_PROJECT = 'UPDATE projects SET title = $1 WHERE id = $2 RETURNING *';
+export const UPDATE_PROJECT = 'UPDATE projects SET title = $2, description = $3 WHERE id = $1 RETURNING *';
 export const DELETE_PROJECT = 'DELETE FROM projects WHERE id = $1';
 
 export const SELECT_TASKS_BY_PROJECT_ID = 'SELECT * FROM tasks WHERE project_id = $1';
