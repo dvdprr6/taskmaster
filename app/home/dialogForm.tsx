@@ -180,6 +180,27 @@ export const DialogEditProjectForm: FC<{
   )
 }
 
+export const DialogDeleteProjectForm: FC<{
+  open: boolean,
+  setOpenAction: Dispatch<SetStateAction<boolean>>,
+  onDeleteAction: () => void
+}> = (props) => {
+  const { open, setOpenAction, onDeleteAction} = props
+
+  return (
+    <Dialog open={open} onOpenChange={setOpenAction}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Are you sure you want to delete this project?</DialogTitle>
+        </DialogHeader>
+        <DialogFooter>
+          <Button onClick={() => setOpenAction(false)}>No</Button>
+          <Button onClick={() => onDeleteAction()}>Yes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 export const DialogAddTaskForm: FC<{
   open: boolean,

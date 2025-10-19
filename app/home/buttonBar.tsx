@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { DialogAddProjectForm, DialogEditProjectForm } from './dialogForm'
+import { DialogAddProjectForm, DialogEditProjectForm, DialogDeleteProjectForm } from './dialogForm'
 import { addProject, updateProject, deleteProject } from './actions'
 
 const ButtonBar: FC<{
@@ -53,15 +53,9 @@ const ButtonBar: FC<{
       .finally(() => setOpenEditDialogProject(false))
   }
 
-  const handleDeleteProject = (values: z.infer<typeof formProjectSchema>) => {
-    const deletedProject: Project = {
-      id: values.id,
-      title: values.title,
-      description: values.description || ''
-    }
-
-    deleteProject(deletedProject)
-      .then(() => setProjects(prev => prev.filter(p => p.id !== deletedProject.id)))
+  const handleDeleteProject = () => {
+    deleteProject(selectedProject)
+      .then(() => setProjects(prev => prev.filter(p => p.id !== selectedProject.id)))
       .catch(error => console.error('Error deleting project:', error))
       .finally(() => setOpenDeleteDialogProject(false))
   }
@@ -116,6 +110,11 @@ const ButtonBar: FC<{
         initialValues={selectedProject}
       />
       <Button onClick={() => setOpenDeleteDialogProject(true)}>Delete Project</Button>
+      <DialogDeleteProjectForm
+        open={openDeleteDialogProject}
+        setOpenAction={setOpenDeleteDialogProject}
+        onDeleteAction={handleDeleteProject}
+      />
     </div>
   )
 }
