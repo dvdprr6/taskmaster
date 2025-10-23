@@ -7,13 +7,8 @@ import Body from './body'
 
 const MainPage: FC<{ projectsWithTasks: ProjectWithTasks[] }> = (props) => {
   const { projectsWithTasks } = props
-  const [selectedProject, setSelectedProject] = useState<Project>(
-    projectsWithTasks.length > 0 ? {
-      id: projectsWithTasks[0].id,
-      title: projectsWithTasks[0].title,
-      description: projectsWithTasks[0].description
-    } : {} as Project)
-  const [projects, setProjects] = useState<Project[]>(projectsWithTasks.map(item => ({ id: item.id, title: item.title, description: item.description })))
+  const [selectedProject, setSelectedProject] = useState<ProjectWithTasks>(projectsWithTasks.length > 0 ? projectsWithTasks[0] : {} as ProjectWithTasks)
+  const [projects, setProjects] = useState<ProjectWithTasks[]>(projectsWithTasks)
 
   return(
     <section>
@@ -31,11 +26,11 @@ const MainPage: FC<{ projectsWithTasks: ProjectWithTasks[] }> = (props) => {
         />
       </div>
       <div style={{ width: '90%', maxWidth: 'none', margin: 'auto' }}>
-        <Body
-          tasks={selectedProject}
-          removeTask={removeTask}
-          updateTask={updateTask}
-        />
+        {/*<Body*/}
+        {/*  tasks={selectedProject}*/}
+        {/*  removeTask={removeTask}*/}
+        {/*  updateTask={updateTask}*/}
+        {/*/>*/}
       </div>
     </section>
   )

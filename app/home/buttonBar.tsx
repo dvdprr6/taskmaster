@@ -3,7 +3,7 @@
 import {FC, SetStateAction, useState, Dispatch} from 'react'
 import { Button } from '@/components/ui/button'
 import { z } from 'zod'
-import {Task, Project, formTaskSchema, formProjectSchema } from './types'
+import {Task, Project, formTaskSchema, formProjectSchema, ProjectWithTasks} from './types'
 import {
   Select,
   SelectContent,
@@ -21,10 +21,10 @@ import {
 } from './actions'
 
 const ButtonBar: FC<{
-  projects: Project[],
-  setProjectsAction: Dispatch<SetStateAction<Project[]>>,
-  selectedProject: Project,
-  setSelectedProjectAction: Dispatch<SetStateAction<Project>>
+  projects: ProjectWithTasks[],
+  setProjectsAction: Dispatch<SetStateAction<ProjectWithTasks[]>>,
+  selectedProject: ProjectWithTasks,
+  setSelectedProjectAction: Dispatch<SetStateAction<ProjectWithTasks>>
 }> = (props) => {
   const { projects, setProjectsAction, selectedProject, setSelectedProjectAction } = props
   const [openAddDialogTask, setOpenAddDialogTask] = useState<boolean>(false)
@@ -40,7 +40,7 @@ const ButtonBar: FC<{
       description: values.description || ''
     }
     addProject(newProject)
-      .then(project => setProjectsAction(prev => [...prev, project]))
+      .then(project => setProjectsAction(prev => [...prev, { ...project, tasks: [] }]))
       .catch(error => console.error('Error adding project:', error))
       .finally(() => setOpenAddDialogProject(false))
   }
@@ -54,8 +54,8 @@ const ButtonBar: FC<{
 
     updateProject(updatedProject)
       .then(project => {
-        setProjectsAction(prev => prev.map(p => p.id === updatedProject.id ? project : p))
-        setSelectedProjectAction(project)
+        setProjectsAction(prev => prev.map(p => p.id === updatedProject.id ? { ...project, tasks: p.tasks } : p))
+        // setSelectedProjectAction(project)
       })
       .catch(error => console.error('Error updating project:', error))
       .finally(() => setOpenEditDialogProject(false))
@@ -136,13 +136,13 @@ const ButtonBar: FC<{
 export default ButtonBar
 
 const ProjectSelection: FC<{
-  projects: Project[]
-  setSelectedProjectAction: Dispatch<SetStateAction<Project>>
+  projects: ProjectWithTasks[]
+  setSelectedProjectAction: Dispatch<SetStateAction<ProjectWithTasks>>
 }> = (props) => {
   const { projects, setSelectedProjectAction } = props
 
   const handleOnValueChange = (value: string) => {
-    const selectedProject = projects.find(project => project.title === value) || {} as Project
+    const selectedProject = projects.find(project => project.title === value) || {} as ProjectWithTasks
     setSelectedProjectAction(selectedProject)
   }
 
