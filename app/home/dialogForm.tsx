@@ -214,7 +214,8 @@ export const DialogAddTaskForm: FC<{
       id: uuidv4(),
       status: 'NOT STARTED',
       title: '',
-      description: ''
+      description: '',
+      projectId: ''
     },
   })
 
@@ -224,7 +225,8 @@ export const DialogAddTaskForm: FC<{
         id: uuidv4(),
         status: 'NOT STARTED',
         title: '',
-        description: ''
+        description: '',
+        projectId: ''
       })
     }
   }, [open, form])

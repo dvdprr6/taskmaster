@@ -2,16 +2,51 @@
 
 import { query } from '@/lib/db'
 import {
-  SELECT_PROJECTS, INSERT_PROJECT, UPDATE_PROJECT, DELETE_PROJECT, SELECT_TASKS_BY_PROJECT_ID,
+  SELECT_PROJECTS, INSERT_PROJECT, UPDATE_PROJECT, DELETE_PROJECT, SELECT_TASKS_BY_PROJECT_ID, PROJECTS_WITH_TASKS_VIEW,
   SELECT_TASKS_BY_PROJECT_ID_AND_STATUS, INSERT_TASK, UPDATE_TASK, DELETE_TASK
 } from './constants'
-import {Project, Task} from './types'
+import {Project, ProjectWithTasks, ProjectWithTasksDao, Task} from './types'
 import { revalidatePath } from 'next/cache'
-import {QueryResult} from "pg";
+import { QueryResult } from 'pg'
+import _ from 'lodash'
+
+export async function getProjectsWithTasks(): Promise<ProjectWithTasks[]> {
+  try{
+    const projectsWithTasksRows: QueryResult<ProjectWithTasksDao> = await query(PROJECTS_WITH_TASKS_VIEW, [])
+    const projectsWithTasksDao: ProjectWithTasksDao[] = projectsWithTasksRows.rows
+
+    const projectsGroupedWithTasks = _.groupBy(projectsWithTasksDao, 'projectid')
+
+    const projectsWithTasks: ProjectWithTasks[] = _.toPairs(projectsGroupedWithTasks)
+      .map(([projectid, value]) => {
+
+        const projectDetails = value[0];
+
+        return {
+          id: projectid,
+          title: projectDetails.projecttitle,
+          description: projectDetails.projectdescription,
+          tasks: value.map(item => ({
+            id: item.taskid,
+            title: item.tasktitle,
+            description: item.taskdescription,
+            status: item.taskstatus,
+            projectId: item.taskprojectid
+          }))
+        }
+      })
+
+    return projectsWithTasks
+  } catch(error){
+    console.error('Error getting projects with tasks:', error)
+    return []
+  }
+}
 
 export async function getProjects(): Promise<Project[]> {
   try {
     const projectListRows: QueryResult<Project> = await query(SELECT_PROJECTS, [])
+    revalidatePath('/home') // Revalidate the current page
     return projectListRows.rows
   } catch (error) {
     console.error('Error getting projects:', error)

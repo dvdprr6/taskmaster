@@ -8,3 +8,5 @@ export const SELECT_TASKS_BY_PROJECT_ID_AND_STATUS = 'SELECT * FROM tasks WHERE 
 export const INSERT_TASK = 'INSERT INTO tasks (id, title, description, status, project_id) VALUES ($1, $2, $3, $4, $5) RETURNING *';
 export const UPDATE_TASK = 'UPDATE tasks SET title = $1, description = $2, status = $3, project_id = $4 WHERE id = $5 RETURNING *';
 export const DELETE_TASK = 'DELETE FROM tasks WHERE id = $1';
+
+export const PROJECTS_WITH_TASKS_VIEW = 'SELECT projectid, projecttitle, projectDescription, taskId, taskTitle, taskDescription, taskStatus, taskProjectId FROM projects_with_tasks_view'
